@@ -1,37 +1,49 @@
 import 'package:equatable/equatable.dart';
 
 class Article extends Equatable {
-  final int? id;
   final String? author;
-  final String? title;
+  final String? content;
   final String? description;
+  final String? publishedAt;
+  final String? sourceName;
+  final String? title;
   final String? url;
   final String? urlToImage;
-  final String? publishedAt;
-  final String? content;
 
   const Article({
-    this.id,
     this.author,
-    this.title,
+    this.content,
     this.description,
+    this.publishedAt,
+    this.sourceName,
+    this.title,
     this.url,
     this.urlToImage,
-    this.publishedAt,
-    this.content,
   });
+
+  const Article.empty()
+      : this(
+          author: 'empty',
+          content: 'empty',
+          description: 'empty',
+          publishedAt: 'empty',
+          sourceName: 'empty',
+          title: 'empty',
+          url: 'empty',
+          urlToImage: 'empty',
+        );
 
   @override
   List<Object?> get props {
     return [
-      id,
       author,
-      title,
+      content,
       description,
+      publishedAt,
+      sourceName,
+      title,
       url,
       urlToImage,
-      publishedAt,
-      content,
     ];
   }
 }
