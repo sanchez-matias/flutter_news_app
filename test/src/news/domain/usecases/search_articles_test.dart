@@ -23,14 +23,14 @@ void main() {
       'should call [ArticlesRepository.searchArticles] and return [List<Article>]',
       () async {
     when(
-      () => repository.searchArticles(query: testQuery),
+      () => repository.searchArticles(testQuery),
     ).thenAnswer((_) async => const Right(testResponse));
 
     final result = await usecase(testQuery);
 
     expect(result, equals(const Right<dynamic, List<Article>>(testResponse)));
 
-    verify(() => repository.searchArticles(query: testQuery)).called(1);
+    verify(() => repository.searchArticles(testQuery)).called(1);
 
     verifyNoMoreInteractions(repository);
   });

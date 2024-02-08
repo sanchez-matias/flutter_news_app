@@ -10,6 +10,6 @@ class SearchArticles extends UseCase<List<Article>, String> {
 
   @override
   ResultFuture<List<Article>> call(String params) async =>
-      _repository.searchArticles(query: params);
+      _repository.searchArticles(params);
 }
 

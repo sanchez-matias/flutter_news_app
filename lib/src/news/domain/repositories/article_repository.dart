@@ -6,5 +6,5 @@ abstract class ArticleRepository {
 
   ResultFuture<List<Article>> getArticles({int page = 1});
 
-  ResultFuture<List<Article>> searchArticles({String query});
+  ResultFuture<List<Article>> searchArticles(String query);
 }
