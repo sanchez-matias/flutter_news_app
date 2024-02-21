@@ -6,5 +6,5 @@ class Urls {
     String country = 'us',
     String category = 'general',
   }) =>
-      'https://$baseUrl$kGetArticlesEndpoint?apiKey=$apiKey&country=$country&category=$category';
+      '$baseUrl$kGetArticlesEndpoint?apiKey=$apiKey&country=$country&category=$category';
 }

@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_news_app/core/services/injection_container.dart';
+import 'package:flutter_news_app/src/news/presentation/bloc/remote/remote_articles_bloc.dart';
+import 'package:flutter_news_app/src/news/presentation/screens/home_screen.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  init();
   runApp(const MainApp());
 }
 
@@ -9,11 +15,19 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: Scaffold(
-        body: Center(
-          child: Text('Hello World!'),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => sl<RemoteArticlesBloc>(),
         ),
+      ],
+      child: MaterialApp(
+        theme: ThemeData(
+          useMaterial3: true,
+          colorSchemeSeed: Colors.blueGrey,
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+        ),
+        home: const HomeScreen(),
       ),
     );
   }

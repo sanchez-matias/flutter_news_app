@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:flutter_news_app/core/errors/exceptions.dart';
 import 'package:flutter_news_app/core/utils/constants.dart';
 import 'package:flutter_news_app/src/news/data/models/article_model.dart';
@@ -19,16 +20,21 @@ class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
   Future<List<ArticleModel>> getArticles({int page = 1}) async {
     try {
       final response =
-          await _client.get(Uri.parse(Urls.articlesByParameters()));
-      
+          await _client.get(Uri.https(Urls.baseUrl, Urls.kGetArticlesEndpoint, {
+        'apiKey': Urls.apiKey,
+        'country': 'us',
+      }));
+
       if (response.statusCode != 200) {
-        throw ApiException(messagge: response.body, statusCode: response.statusCode);
+        throw ApiException(
+            messagge: response.body, statusCode: response.statusCode);
       }
 
-      return List<Map<String, dynamic>>.from(jsonDecode(response.body) as List)
-          .map((articleData) => ArticleModel.fromMap(articleData))
+      return List<Map<String, dynamic>>.from(
+              jsonDecode(response.body)["articles"] as List)
+          .map((map) => ArticleModel.fromMap(map))
+          .where((article) => article.title != null && article.content != null)
           .toList();
-
     } on ApiException {
       rethrow;
     } catch (e) {
