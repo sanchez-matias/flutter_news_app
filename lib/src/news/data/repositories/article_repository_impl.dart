@@ -12,11 +12,17 @@ class ArticleRepositoryImpl implements ArticleRepository {
   const ArticleRepositoryImpl(this._remoteDatasource);
 
   @override
-  ResultFuture<List<Article>> getArticles({int page = 1}) async {
+  ResultFuture<List<Article>> getArticles({
+    required String page,
+    required String category,
+    required String country,
+  }) async {
     try {
-      return Right(await _remoteDatasource.getArticles(page: page));
-      
-
+      return Right(await _remoteDatasource.getArticles(
+        page: page,
+        category: category,
+        country: country,
+      ));
     } on ApiException catch (e) {
       return Left(ApiFailure.fromException(e));
     }
@@ -27,7 +33,6 @@ class ArticleRepositoryImpl implements ArticleRepository {
     try {
       final result = await _remoteDatasource.searchArticles(query);
       return Right(result);
-
     } on ApiException catch (e) {
       return Left(ApiFailure.fromException(e));
     }

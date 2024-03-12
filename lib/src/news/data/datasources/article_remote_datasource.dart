@@ -6,7 +6,11 @@ import 'package:flutter_news_app/src/news/data/models/article_model.dart';
 import 'package:http/http.dart' as http;
 
 abstract class ArticleRemoteDatasource {
-  Future<List<ArticleModel>> getArticles({int page = 1});
+  Future<List<ArticleModel>> getArticles({
+    required String page,
+    required String category,
+    required String country,
+  });
 
   Future<List<ArticleModel>> searchArticles(String query);
 }
@@ -17,12 +21,18 @@ class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
   ArticleRemoteDatasourceImpl(this._client);
 
   @override
-  Future<List<ArticleModel>> getArticles({int page = 1}) async {
+  Future<List<ArticleModel>> getArticles({
+    required String page,
+    required String category,
+    required String country,
+  }) async {
     try {
       final response =
           await _client.get(Uri.https(Urls.baseUrl, Urls.kGetArticlesEndpoint, {
         'apiKey': Urls.apiKey,
-        'country': 'us',
+        'category': category,
+        'country': country,
+        'page': page,
       }));
 
       if (response.statusCode != 200) {
@@ -33,7 +43,7 @@ class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
       return List<Map<String, dynamic>>.from(
               jsonDecode(response.body)["articles"] as List)
           .map((map) => ArticleModel.fromMap(map))
-          .where((article) => article.title != null && article.content != null)
+          .where((article) => article.title != null)
           .toList();
     } on ApiException {
       rethrow;

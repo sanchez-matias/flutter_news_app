@@ -31,14 +31,14 @@ class ArticleModel extends Article {
 
   ArticleModel.fromMap(Map<String, dynamic> map)
       : this(
-          author: map["author"],
-          content: map["content"],
-          description: map["description"],
-          publishedAt: map["publishedAt"],
+          author: map["author"] ?? 'Author not povided',
+          content: map["content"] ?? 'No content given',
+          description: map["description"] ?? 'No description given',
+          publishedAt: map["publishedAt"] ?? 'Unknown date',
           sourceName: map["source"]["name"] ?? "Not provided",
-          title: map["title"],
+          title: map["title"] ?? 'Untitled',
           url: map["url"],
-          urlToImage: map["urlToImage"],
+          urlToImage: map["urlToImage"] ?? 'https://th.bing.com/th/id/OIP.30oAyXf6XizSRpaa63TRuwHaFE?rs=1&pid=ImgDetMain',
         );
 
   Map<String, dynamic> toMap() => {

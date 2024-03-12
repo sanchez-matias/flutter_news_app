@@ -8,7 +8,13 @@ sealed class RemoteArticlesEvent extends Equatable {
 }
 
 class GetArticlesEvent extends RemoteArticlesEvent {
-  final int page;
+  final String page;
+  final String category;
+  final String country;
 
-  const GetArticlesEvent({this.page = 1});
+  const GetArticlesEvent({
+    required this.page,
+    required this.category,
+    required this.country,
+  });
 }

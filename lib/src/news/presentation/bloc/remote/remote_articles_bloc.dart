@@ -14,7 +14,7 @@ class RemoteArticlesBloc
   RemoteArticlesBloc({
     required GetArticles getArticles,
   })  : _getArticles = getArticles,
-        super(const RemoteArticlesInitial()) {
+        super(const RemoteArticlesState()) {
     on<GetArticlesEvent>(_getArticlesHandler);
   }
 
@@ -22,13 +22,23 @@ class RemoteArticlesBloc
     GetArticlesEvent event,
     Emitter<RemoteArticlesState> emit,
   ) async {
-    emit(const GettingArticles());
+    emit(state.copyWith(status: RequestStatus.gettingArticles));
 
-    final result = await _getArticles(event.page);
+    final result = await _getArticles(GetArticlesParams(
+      page: event.page,
+      category: event.category,
+      country: event.country,
+    ));
 
     result.fold(
-      (failure) => emit(RequestError(failure.errorMessage)),
-      (articles) => emit(ArticlesLoaded(articles)),
+      (failure) => emit(state.copyWith(
+        status: RequestStatus.error,
+        message: failure.errorMessage,
+      )),
+      (articles) => emit(state.copyWith(
+        status: RequestStatus.articlesLoaded,
+        articles: articles,
+      )),
     );
   }
 }

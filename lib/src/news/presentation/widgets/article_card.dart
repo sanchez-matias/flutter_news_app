@@ -11,21 +11,31 @@ class ArticleCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    return InkWell(
-      onTap: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ArticleScreen(article: article),
-            ));
-      },
-      child: Card(
-        clipBehavior: Clip.antiAlias,
-        elevation: 3,
+    return Card(
+      margin: const EdgeInsets.all(10),
+      clipBehavior: Clip.antiAlias,
+      elevation: 3,
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => ArticleScreen(article: article),
+              ));
+        },
         child: Column(
           children: [
-            Image.network(article.urlToImage ??
-                'https://t4.ftcdn.net/jpg/02/51/13/11/360_F_251131195_YKAgbS5YEeDSUmNg69MtEOV3OYxrM2ml.jpg'),
+
+            FadeInImage(
+              fit: BoxFit.cover,
+              placeholderFit: BoxFit.fitHeight,
+              height: 250,
+              width: double.infinity,
+              placeholder: const AssetImage('assets/articles/loading-circle.gif'),
+              image: NetworkImage(article.urlToImage!),
+              imageErrorBuilder: (context, error, stackTrace) => Image.asset('assets/articles/no-image.jpg'),
+            ),
+
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
               child: Text(
@@ -33,6 +43,7 @@ class ArticleCard extends StatelessWidget {
                 style: textTheme.titleLarge,
               ),
             ),
+            
           ],
         ),
       ),
