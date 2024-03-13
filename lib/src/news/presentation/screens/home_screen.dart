@@ -1,57 +1,52 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_news_app/src/news/presentation/bloc/remote/remote_articles_bloc.dart';
-import 'package:flutter_news_app/src/news/presentation/widgets/widgets.dart';
+import 'package:flutter_news_app/src/news/presentation/views/views.dart';
 
-
-class HomeScreen extends StatefulWidget {
+class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
-
-  @override
-  State<HomeScreen> createState() => _HomeScreenState();
-}
-
-class _HomeScreenState extends State<HomeScreen> {
-
-  void getArticles({
-    int page = 0,
-    String category = 'general',
-    String country = 'us',
-  }) {
-    context.read<RemoteArticlesBloc>().add(GetArticlesEvent(
-      page: page.toString(),
-      category: category,
-      country: country,
-    ));
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    getArticles();
-  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: BlocConsumer<RemoteArticlesBloc, RemoteArticlesState>(
-      listener: (context, state) {
-        if (state.status == RequestStatus.initial) {
-          getArticles();
-        }
-      },
-      builder: (context, state) {
-        return switch (state.status) {
-          RequestStatus.initial => const Center(child: CircularProgressIndicator()),
-
-          RequestStatus.gettingArticles => const Center(child: CircularProgressIndicator()),
-
-          RequestStatus.articlesLoaded => CardsScroll(articles: state.articles),
-
-          RequestStatus.error => const ErrorView(),
-        };
-      },
-    ));
+      body: DefaultTabController(
+          length: 3,
+          initialIndex: 1,
+          child: NestedScrollView(
+            headerSliverBuilder: (context, innerBoxIsScrolled) => [
+              SliverAppBar(
+                floating: true,
+                snap: true,
+                centerTitle: true,
+                title: const Text('News'),
+                actions: [
+                  IconButton(
+                      onPressed: () {}, icon: const Icon(Icons.settings)),
+                ],
+                bottom: const TabBar(tabs: [
+                  Tab(
+                    //text: 'Categories',
+                    child: Icon(Icons.category_rounded),
+                  ),
+                  Tab(
+                    //text: 'Home',
+                    child: Icon(Icons.home_rounded),
+                  ),
+                  Tab(
+                    //text: 'Storage',
+                    child: Icon(Icons.bookmark_rounded),
+                  ),
+                ]),
+              ),
+            ],
+            body: const TabBarView(children: [
+              CategoriesView(),
+              HomeView(),
+              StrorageView(),
+            ]),
+          )),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {},
+        child: const Icon(Icons.search),
+      ),
+    );
   }
 }
-
