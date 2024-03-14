@@ -16,7 +16,7 @@ class _HomeViewState extends State<HomeView> {
     String category = 'general',
     String country = 'us',
   }) {
-    context.read<RemoteArticlesBloc>().add(GetArticlesEvent(
+    context.read<HomeBloc>().add(GetArticlesEvent(
           page: page.toString(),
           category: category,
           country: country,
@@ -31,7 +31,7 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<RemoteArticlesBloc, RemoteArticlesState>(
+    return BlocConsumer<HomeBloc, RemoteArticlesState>(
       listener: (context, state) {
         if (state.status == RequestStatus.initial) {
           getArticles();

@@ -13,7 +13,8 @@ final sl = GetIt.instance;
 Future<void> init() async {
   sl
     // App logic
-    ..registerFactory(() => RemoteArticlesBloc(getArticles: sl()))
+    ..registerFactory(() => HomeBloc(getArticles: sl()))
+    ..registerFactory(() => CategoryBloc(getArticles: sl()))
     ..registerFactory(() => SearchCubit(sl()))
 
     // Usecases

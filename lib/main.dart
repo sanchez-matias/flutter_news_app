@@ -19,7 +19,10 @@ class MainApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => sl<RemoteArticlesBloc>(),
+          create: (context) => sl<HomeBloc>(),
+        ),
+        BlocProvider(
+          create: (context) => sl<CategoryBloc>(),
         ),
         BlocProvider(
           create: (context) => sl<SearchCubit>(),

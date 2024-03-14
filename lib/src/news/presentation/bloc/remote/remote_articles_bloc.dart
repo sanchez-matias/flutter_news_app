@@ -7,6 +7,14 @@ import '../../../domain/entities/article.dart';
 part 'remote_articles_event.dart';
 part 'remote_articles_state.dart';
 
+class HomeBloc extends RemoteArticlesBloc {
+  HomeBloc({required super.getArticles});
+}
+
+class CategoryBloc extends RemoteArticlesBloc {
+  CategoryBloc({required super.getArticles});
+}
+
 class RemoteArticlesBloc
     extends Bloc<RemoteArticlesEvent, RemoteArticlesState> {
   final GetArticles _getArticles;
