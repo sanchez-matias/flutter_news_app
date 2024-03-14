@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_news_app/src/news/presentation/delegates/search_delegate.dart';
 import 'package:flutter_news_app/src/news/presentation/views/views.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -44,8 +45,13 @@ class HomeScreen extends StatelessWidget {
             ]),
           )),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {},
         child: const Icon(Icons.search),
+        onPressed: () {
+          showSearch(
+            context: context,
+            delegate: SearchArticleDelegate(),
+          );
+        },
       ),
     );
   }

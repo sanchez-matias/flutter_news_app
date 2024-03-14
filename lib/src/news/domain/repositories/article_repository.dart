@@ -10,5 +10,9 @@ abstract class ArticleRepository {
     required String country,
   });
 
-  ResultFuture<List<Article>> searchArticles(String query);
+  ResultFuture<List<Article>> searchArticles({
+    required String query,
+    required String searchIn,
+    required String language,
+  });
 }

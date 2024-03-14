@@ -12,7 +12,11 @@ abstract class ArticleRemoteDatasource {
     required String country,
   });
 
-  Future<List<ArticleModel>> searchArticles(String query);
+  Future<List<ArticleModel>> searchArticles({
+    required String query,
+    required String searchIn,
+    required String language,
+  });
 }
 
 class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
@@ -53,8 +57,33 @@ class ArticleRemoteDatasourceImpl implements ArticleRemoteDatasource {
   }
 
   @override
-  Future<List<ArticleModel>> searchArticles(String query) async {
-    // TODO: implement searchArticles
-    throw UnimplementedError();
+  Future<List<ArticleModel>> searchArticles({
+    required String query,
+    required String searchIn,
+    required String language,
+  }) async {
+    try {
+      final response = await _client
+          .get(Uri.https(Urls.baseUrl, Urls.kSearchArticlesEndpoint, {
+        'apiKey': Urls.apiKey,
+        'q': query,
+        'searchIn': searchIn,
+        'language': language,
+      }));
+
+      if (response.statusCode != 200) {
+        throw ApiException(
+            messagge: response.body, statusCode: response.statusCode);
+      }
+
+      return List<Map<String, dynamic>>.from(
+              jsonDecode(response.body)["articles"] as List)
+          .map((map) => ArticleModel.fromMap(map))
+          .toList();
+    } on ApiException {
+      rethrow;
+    } catch (e) {
+      throw ApiException(messagge: e.toString(), statusCode: 500);
+    }
   }
 }

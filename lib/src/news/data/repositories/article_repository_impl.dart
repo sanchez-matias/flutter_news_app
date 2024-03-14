@@ -29,9 +29,17 @@ class ArticleRepositoryImpl implements ArticleRepository {
   }
 
   @override
-  ResultFuture<List<Article>> searchArticles(String query) async {
+  ResultFuture<List<Article>> searchArticles({
+    required String query,
+    required String searchIn,
+    required String language,
+  }) async {
     try {
-      final result = await _remoteDatasource.searchArticles(query);
+      final result = await _remoteDatasource.searchArticles(
+        query: query,
+        searchIn: searchIn,
+        language: language,
+      );
       return Right(result);
     } on ApiException catch (e) {
       return Left(ApiFailure.fromException(e));
