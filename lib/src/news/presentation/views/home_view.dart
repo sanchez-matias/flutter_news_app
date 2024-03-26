@@ -10,7 +10,7 @@ class HomeView extends StatefulWidget {
   State<HomeView> createState() => _HomeViewState();
 }
 
-class _HomeViewState extends State<HomeView> {
+class _HomeViewState extends State<HomeView> with AutomaticKeepAliveClientMixin {
   void getArticles({
     int page = 0,
     String category = 'general',
@@ -31,6 +31,7 @@ class _HomeViewState extends State<HomeView> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return BlocConsumer<HomeBloc, RemoteArticlesState>(
       listener: (context, state) {
         if (state.status == RequestStatus.initial) {
@@ -49,4 +50,7 @@ class _HomeViewState extends State<HomeView> {
       },
     );
   }
+  
+  @override
+  bool get wantKeepAlive => true;
 }

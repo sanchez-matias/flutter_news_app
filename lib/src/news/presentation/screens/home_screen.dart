@@ -2,11 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_news_app/src/news/presentation/delegates/search_delegate.dart';
 import 'package:flutter_news_app/src/news/presentation/views/views.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> with AutomaticKeepAliveClientMixin {
+  @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       body: DefaultTabController(
           length: 3,
@@ -55,4 +61,7 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
+  
+  @override
+  bool get wantKeepAlive => true;
 }
