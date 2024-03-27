@@ -17,22 +17,37 @@ void main() {
   });
 
   const testResponse = [Article.empty()];
-  
+  const testPage = '100';
+  const testCategory = 'politics';
+  const testCountry = 'us';
+
   test(
     'should call the [ArticleRepository.createUser]',
     () async {
       // Arrange
-      when(() => repository.getArticles()).thenAnswer(
+      when(() => repository.getArticles(
+            page: testPage,
+            category: testCategory,
+            country: testCountry,
+          )).thenAnswer(
         (_) async => const Right(testResponse),
       );
 
       // Act
-      final result = await usecase(1);
+      final result = await usecase(GetArticlesParams(
+        page: testPage,
+        category: testCategory,
+        country: testCountry,
+      ));
 
       // Assert
       expect(result, equals(const Right<dynamic, List<Article>>(testResponse)));
 
-      verify(() => repository.getArticles()).called(1);
+      verify(() => repository.getArticles(
+            page: testPage,
+            category: testCategory,
+            country: testCountry,
+          )).called(1);
 
       verifyNoMoreInteractions(repository);
     },

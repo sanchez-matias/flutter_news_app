@@ -18,19 +18,31 @@ void main() {
 
   const testResponse = [Article.empty()];
   const testQuery = 'SEARCH_TEST_QUERY';
+  const testLanguage = 'Tagalog';
+  const testsearchIn = 'title,description';
 
   test(
       'should call [ArticlesRepository.searchArticles] and return [List<Article>]',
       () async {
-    when(
-      () => repository.searchArticles(testQuery),
-    ).thenAnswer((_) async => const Right(testResponse));
+    when(() => repository.searchArticles(
+          query: testQuery,
+          language: testLanguage,
+          searchIn: testsearchIn,
+        )).thenAnswer((_) async => const Right(testResponse));
 
-    final result = await usecase(testQuery);
+    final result = await usecase(SearchArticlesParams(
+      query: testQuery,
+      searchIn: testsearchIn,
+      language: testLanguage,
+    ));
 
     expect(result, equals(const Right<dynamic, List<Article>>(testResponse)));
 
-    verify(() => repository.searchArticles(testQuery)).called(1);
+    verify(() => repository.searchArticles(
+          query: testQuery,
+          language: testLanguage,
+          searchIn: testsearchIn,
+        )).called(1);
 
     verifyNoMoreInteractions(repository);
   });

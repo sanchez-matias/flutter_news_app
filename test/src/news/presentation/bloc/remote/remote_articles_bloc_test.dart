@@ -2,23 +2,24 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:dartz/dartz.dart';
 import 'package:flutter_news_app/core/errors/failure.dart';
 import 'package:flutter_news_app/src/news/domain/usecases/get_articles.dart';
-import 'package:flutter_news_app/src/news/domain/usecases/search_articles.dart';
 import 'package:flutter_news_app/src/news/presentation/bloc/remote/remote_articles_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
 class MockGetArticles extends Mock implements GetArticles {}
 
-class MockSearchArticles extends Mock implements SearchArticles {}
-
 void main() {
   group('RemoteArticlesBloc', () {
     late GetArticles getArticles;
-    const testApiFailure =
-        ApiFailure(statusCode: 400, message: 'Test Failed Successfully');
+
+    const testApiFailure = ApiFailure(
+      statusCode: 400,
+      message: 'Get Test Failed Successfully',
+    );
 
     setUp(() {
       getArticles = MockGetArticles();
+      registerFallbackValue(GetArticlesParams(page: '2', category: 'general', country: 'ar'));
     });
 
     test('initial state is [RemoteArticlesInitial]', () {
@@ -26,7 +27,7 @@ void main() {
           RemoteArticlesBloc(
             getArticles: getArticles,
           ).state,
-          const RemoteArticlesInitial());
+          const RemoteArticlesState(status: RequestStatus.initial));
     });
 
     blocTest<RemoteArticlesBloc, RemoteArticlesState>(
@@ -36,13 +37,15 @@ void main() {
               .thenAnswer((_) async => const Right([]));
         },
         build: () => RemoteArticlesBloc(getArticles: getArticles),
-        act: (bloc) => bloc.add(const GetArticlesEvent(page: 2)),
+        act: (bloc) => bloc.add(const GetArticlesEvent(
+            page: '2', category: 'general', country: 'us')),
         expect: () => <RemoteArticlesState>[
-              const GettingArticles(),
-              const ArticlesLoaded([]),
+              const RemoteArticlesState(status: RequestStatus.gettingArticles),
+              const RemoteArticlesState(
+                  status: RequestStatus.articlesLoaded, articles: []),
             ],
         verify: (_) {
-          verify(() => getArticles(2)).called(1);
+          verify(() => getArticles(any())).called(1);
           verifyNoMoreInteractions(getArticles);
         });
 
@@ -53,13 +56,14 @@ void main() {
             .thenAnswer((_) async => const Left(testApiFailure));
       },
       build: () => RemoteArticlesBloc(getArticles: getArticles),
-      act: (bloc) => bloc.add(const GetArticlesEvent(page: 2)),
+      act: (bloc) => bloc.add(const GetArticlesEvent(
+          page: '2', category: 'general', country: 'us')),
       expect: () => <RemoteArticlesState>[
-        const GettingArticles(),
-        RequestError(testApiFailure.errorMessage),
+        const RemoteArticlesState(status: RequestStatus.gettingArticles),
+        RemoteArticlesState(status: RequestStatus.error, message: testApiFailure.errorMessage)
       ],
       verify: (_) {
-        verify(() => getArticles(2)).called(1);
+        verify(() => getArticles(any())).called(1);
         verifyNoMoreInteractions(getArticles);
       },
     );

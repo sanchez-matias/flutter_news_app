@@ -18,28 +18,39 @@ void main() {
   setUp(() {
     client = MockClient();
     remoteDatasource = ArticleRemoteDatasourceImpl(client);
+    registerFallbackValue(Uri.https(Urls.baseUrl, Urls.kGetArticlesEndpoint));
   });
 
+  const testArticles = ArticleModel.empty();
+
   group('getArticles', () {
-    const testArticles = [ArticleModel.empty()];
+    const testPage = '100';
+    const testCountry = 'bolivia';
+    const testCategory = 'politics';
 
     test('should return a [List<ArticleModel>] when the status code is 200',
         () async {
-      when(() => client.get(Uri.parse(Urls.articlesByParameters())))
-          .thenAnswer((_) async => http.Response(
-                jsonEncode([testArticles.first.toMap()]),
-                200,
-              ));
+      when(() => client.get(any())).thenAnswer((_) async => http.Response(
+            jsonEncode({
+              "articles": [testArticles.toMap()]
+            }),
+            200,
+          ));
 
-      final result = await remoteDatasource.getArticles();
+      final result = await remoteDatasource.getArticles(
+        country: testCountry,
+        category: testCategory,
+        page: testPage,
+      );
 
-      expect(result, isA<List<ArticleModel>>());
+      expect(result, equals([testArticles]));
 
       verify(() => client.get(
             Uri.https(Urls.baseUrl, Urls.kGetArticlesEndpoint, {
               'apiKey': Urls.apiKey,
-              'country': 'us',
-              'category': 'general'
+              'category': testCategory,
+              'country': testCountry,
+              'page': testPage,
             }),
           )).called(1);
 
@@ -50,24 +61,25 @@ void main() {
         () async {
       const testMessage = 'SERVER DOWN!';
 
-      when(() => client.get(Uri.parse(Urls.articlesByParameters())))
-          .thenAnswer((_) async => http.Response(
-                testMessage,
-                500,
-              ));
+      when(() => client.get(any())).thenAnswer((_) async => http.Response(
+            testMessage,
+            500,
+          ));
 
       final methodCall = remoteDatasource.getArticles;
 
       expect(
-        () => methodCall(),
+        () async => methodCall(
+            page: testPage, category: testCategory, country: testCountry),
         throwsA(const ApiException(messagge: testMessage, statusCode: 500)),
       );
 
       verify(() => client.get(
             Uri.https(Urls.baseUrl, Urls.kGetArticlesEndpoint, {
               'apiKey': Urls.apiKey,
-              'country': 'us',
-              'category': 'general'
+              'category': testCategory,
+              'country': testCountry,
+              'page': testPage
             }),
           )).called(1);
 
@@ -75,5 +87,68 @@ void main() {
     });
   });
 
-  // TODO: implement tests for searchArticles function.
+  group('searchArticles', () {
+    const testQuery = 'obama';
+    const testSearchIn = 'filters';
+    const testLanguage = 'polish';
+
+    test('should return a [List<ArticeModel>] when status code is 200',
+        () async {
+      when(() => client.get(any()))
+          .thenAnswer((invocation) async => http.Response(
+              jsonEncode({
+                "articles": [testArticles.toMap()]
+              }),
+              200));
+
+      final result = await remoteDatasource.searchArticles(
+        query: testQuery,
+        searchIn: testSearchIn,
+        language: testLanguage,
+      );
+
+      expect(result, equals([testArticles]));
+
+      verify(
+        () => client.get(Uri.https(Urls.baseUrl, Urls.kSearchArticlesEndpoint, {
+          'apiKey': Urls.apiKey,
+          'q': testQuery,
+          'searchIn': testSearchIn,
+          'language': testLanguage,
+        })),
+      ).called(1);
+
+      verifyNoMoreInteractions(client);
+    });
+
+    test('should throw a [ApiException] when status code is not 200', () async {
+      when(() => client.get(any())).thenAnswer((_) async => http.Response(
+            'ApiException thrown!',
+            500,
+          ));
+
+      final methodCall = remoteDatasource.searchArticles;
+
+      expect(
+        () => methodCall(
+          query: testQuery,
+          searchIn: testSearchIn,
+          language: testLanguage,
+        ),
+        throwsA(const ApiException(
+            messagge: 'ApiException thrown!', statusCode: 500)),
+      );
+
+      verify(
+        () => client.get(Uri.https(Urls.baseUrl, Urls.kSearchArticlesEndpoint, {
+          'apiKey': Urls.apiKey,
+          'q': testQuery,
+          'searchIn': testSearchIn,
+          'language': testLanguage,
+        })),
+      ).called(1);
+
+      verifyNoMoreInteractions(client);
+    });
+  });
 }

@@ -30,22 +30,36 @@ void main() {
   );
 
   group('getArticles', () {
-    const int page = 3;
-
+    const testPage = '100';
+    const testCategory = 'politics';
+    const testCountry = 'brazil';
     test(
-        'should call the [RemoteDatasource.getArticles] and return [List<Articles>] when call to remote source is successful',
+        'should call the [RemoteDatasource.getArticles] and return [List<Articles>] when call'
+        'to remote source is successful',
         () async {
       // arrange
       when(
-        () => remoteDatasource.getArticles(page: any(named: 'page')),
-      ).thenAnswer((_) async => Future.value(List.empty()));
+        () => remoteDatasource.getArticles(
+          page: any(named: 'page'),
+          category: any(named: 'category'),
+          country: any(named: 'country'),
+        ),
+      ).thenAnswer((_) async => []);
 
       // act
-      final result = await repositoryImpl.getArticles(page: page);
+      final result = await repositoryImpl.getArticles(
+        page: testPage,
+        category: testCategory,
+        country: testCountry,
+      );
 
       // assert
-      expect(result, equals(const Right<dynamic, List<Article>>([])));
-      verify(() => remoteDatasource.getArticles(page: 3)).called(1);
+      expect(result, isA<Right<dynamic, List<Article>>>());
+      verify(() => remoteDatasource.getArticles(
+            page: testPage,
+            category: testCategory,
+            country: testCountry,
+          )).called(1);
       verifyNoMoreInteractions(remoteDatasource);
     });
 
@@ -53,10 +67,18 @@ void main() {
         'should return an [ApiException] when the remote source is unsuccessful',
         () async {
       when(
-        () => remoteDatasource.getArticles(page: any(named: 'page')),
+        () => remoteDatasource.getArticles(
+          page: any(named: 'page'),
+          category: any(named: 'category'),
+          country: any(named: 'country'),
+        ),
       ).thenThrow(testApiException);
 
-      final result = await repositoryImpl.getArticles(page: page);
+      final result = await repositoryImpl.getArticles(
+        page: testPage,
+        category: testCategory,
+        country: testCountry,
+      );
 
       expect(
           result,
@@ -65,7 +87,11 @@ void main() {
             message: testApiException.messagge,
           ))));
 
-      verify(() => remoteDatasource.getArticles(page: page)).called(1);
+      verify(() => remoteDatasource.getArticles(
+            page: testPage,
+            category: testCategory,
+            country: testCountry,
+          )).called(1);
 
       verifyNoMoreInteractions(remoteDatasource);
     });
@@ -73,18 +99,32 @@ void main() {
 
   group('searchArticles', () {
     const testQuery = 'test';
+    const testLanguage = 'language';
+    const testSearchIn = 'searchIn';
 
     test(
-        'should call the [RemoteDatasource.searchArticles] and return [List<Articles>] when call to remote source is successful',
+        'should call the [RemoteDatasource.searchArticles] and return [List<Articles>] when '
+        'call to remote source is successful',
         () async {
-      when(() => remoteDatasource.searchArticles(testQuery))
-          .thenAnswer((_) async => []);
+      when(() => remoteDatasource.searchArticles(
+            query: testQuery,
+            language: testLanguage,
+            searchIn: testSearchIn,
+          )).thenAnswer((_) async => []);
 
-      final result = await repositoryImpl.searchArticles(testQuery);
+      final result = await repositoryImpl.searchArticles(
+        query: testQuery,
+        language: testLanguage,
+        searchIn: testSearchIn,
+      );
 
       expect(result, isA<Right<dynamic, List<Article>>>());
 
-      verify(() => remoteDatasource.searchArticles(testQuery)).called(1);
+      verify(() => remoteDatasource.searchArticles(
+            query: testQuery,
+            language: testLanguage,
+            searchIn: testSearchIn,
+          )).called(1);
 
       verifyNoMoreInteractions(remoteDatasource);
     });
@@ -92,14 +132,25 @@ void main() {
     test(
         'should return an [ApiException] when the remote source is unsuccessful',
         () async {
-      when(() => remoteDatasource.searchArticles(testQuery))
-          .thenThrow(testApiException);
+      when(() => remoteDatasource.searchArticles(
+            query: testQuery,
+            language: testLanguage,
+            searchIn: testSearchIn,
+          )).thenThrow(testApiException);
 
-      final result = await repositoryImpl.searchArticles(testQuery);
+      final result = await repositoryImpl.searchArticles(
+        query: testQuery,
+        language: testLanguage,
+        searchIn: testSearchIn,
+      );
 
       expect(result, equals(Left(ApiFailure.fromException(testApiException))));
 
-      verify(() => remoteDatasource.searchArticles(testQuery)).called(1);
+      verify(() => remoteDatasource.searchArticles(
+            query: testQuery,
+            language: testLanguage,
+            searchIn: testSearchIn,
+          )).called(1);
 
       verifyNoMoreInteractions(remoteDatasource);
     });
